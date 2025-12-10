@@ -12,7 +12,7 @@
 
     // The Swift side will inject this value dynamically.
     // We replace it with a placeholder that Swift will fill.
-    const MAX_LENGTH = 4946;
+    const MAX_LENGTH = 4950;
 
     function getCurrentLength() {
         let html = document.body.innerHTML;
