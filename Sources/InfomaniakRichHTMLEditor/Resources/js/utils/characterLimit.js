@@ -15,8 +15,23 @@
     const MAX_LENGTH = 5000;
 
     function getCurrentLength() {
-        const text = (document.body.innerText || "").trim();
-        return text.length;
+        let html = document.body.innerHTML;
+
+        // Remove all tags
+        html = html.replace(/<[^>]+>/g, "");
+
+        // Decode entities
+        html = html.replace(/&nbsp;/g, " ");
+        html = html.replace(/&amp;/g, "&");
+        html = html.replace(/&lt;/g, "<");
+        html = html.replace(/&gt;/g, ">");
+        html = html.replace(/&quot;/g, "\"");
+        html = html.replace(/&#39;/g, "'");
+
+        // Trim and collapse whitespace
+        html = html.replace(/\s+/g, " ").trim();
+
+        return html.length;
     }
 
     document.addEventListener("beforeinput", function(event) {
