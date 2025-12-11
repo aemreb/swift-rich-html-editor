@@ -85,7 +85,7 @@ public class RichHTMLEditorView: PlatformView {
 
     /// The natural size for the receiving view, considering only properties of the view itself.
     override public var intrinsicContentSize: CGSize {
-        CGSize(width: PlatformView.noIntrinsicMetric, height: rawContentHeight)
+        CGSize(width: PlatformView.noIntrinsicMetric, height: 326)
     }
 
     #if canImport(UIKit)
