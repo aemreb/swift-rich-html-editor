@@ -5,49 +5,53 @@
 //  Created by Ahmet Emre Boyacı on 10.12.2025.
 //
 
-
-(function () {
+(function() {
     if (window.__characterLimitInstalled) return;
     window.__characterLimitInstalled = true;
 
-    const MAX_LENGTH = 4950;
+    const MAX_LENGTH = 5000;
 
-    // Always target the real editor node
-    const editor = document.querySelector('#editor');
-
+    // Clean HTML → return visible text length
     function getCurrentLength() {
-        if (!editor) return 0;
+        let html = document.getElementById("swift-rich-html-editor").innerHTML;
 
-        // innerText is ALWAYS correct visible text
-        let text = editor.innerText || "";
-        text = text.replace(/\s+/g, " ").trim(); // normalize whitespace
-        return text.length;
+        html = html.replace(/<[^>]+>/g, "");
+        html = html.replace(/&nbsp;/g, " ");
+        html = html.replace(/&amp;/g, "&");
+        html = html.replace(/&lt;/g, "<");
+        html = html.replace(/&gt;/g, ">");
+        html = html.replace(/&quot;/g, "\"");
+        html = html.replace(/&#39;/g, "'");
+        html = html.replace(/\s+/g, " ").trim();
+
+        return html.length;
     }
 
-    document.addEventListener('beforeinput', function (event) {
-        const type = event.inputType;
-        if (type.startsWith("delete")) return;
+    const editable = document.getElementById("swift-rich-html-editor");
+
+    if (!editable) return; // safety
+
+    // BEFOREINPUT — main enforcement
+    editable.addEventListener("beforeinput", function(event) {
+        if (event.inputType.startsWith("delete")) return;
 
         const current = getCurrentLength();
+        const insert = (event.data || "").length;
 
-        // event.data is null for Enter, emoji, dictation, etc.
-        const incoming = (event.data || "").length;
-
-        if (current + incoming > MAX_LENGTH) {
+        if (current + insert > MAX_LENGTH) {
             event.preventDefault();
         }
     });
 
-    document.addEventListener('paste', function (event) {
-        if (!editor) return;
-
+    // PASTE handler — truncate if needed
+    editable.addEventListener("paste", function(event) {
         const current = getCurrentLength();
         const paste = (event.clipboardData || window.clipboardData).getData("text");
 
         if (current + paste.length > MAX_LENGTH) {
             event.preventDefault();
-            const allowed = MAX_LENGTH - current;
 
+            const allowed = MAX_LENGTH - current;
             if (allowed > 0) {
                 const truncated = paste.substring(0, allowed);
                 document.execCommand("insertText", false, truncated);
