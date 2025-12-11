@@ -166,6 +166,28 @@ public class RichHTMLEditorView: PlatformView {
         webView.resignFirstResponder()
         return true
     }
+    
+#if canImport(UIKit)
+    private weak var accessoryVC: UIInputViewController?
+
+    public override var inputAccessoryViewController: UIInputViewController? {
+        accessoryVC
+    }
+
+    public func setKeyboardAccessory(_ view: UIView) {
+        let vc = UIInputViewController()
+        vc.view.addSubview(view)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            view.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
+            view.topAnchor.constraint(equalTo: vc.view.topAnchor),
+            view.bottomAnchor.constraint(equalTo: vc.view.bottomAnchor)
+        ])
+        accessoryVC = vc
+        reloadInputViews()
+    }
+#endif
 }
 
 // MARK: - Customize Editor
