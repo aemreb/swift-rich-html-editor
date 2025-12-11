@@ -6,58 +6,50 @@
 //
 
 
-(function() {
+(function () {
     if (window.__characterLimitInstalled) return;
     window.__characterLimitInstalled = true;
 
-    // The Swift side will inject this value dynamically.
-    // We replace it with a placeholder that Swift will fill.
     const MAX_LENGTH = 4950;
 
+    // Always target the real editor node
+    const editor = document.querySelector('#swift-rich-html-editor');
+
     function getCurrentLength() {
-        let html = document.body.innerHTML;
+        if (!editor) return 0;
 
-        // Remove all tags
-        html = html.replace(/<[^>]+>/g, "");
-
-        // Decode entities
-        html = html.replace(/&nbsp;/g, " ");
-        html = html.replace(/&amp;/g, "&");
-        html = html.replace(/&lt;/g, "<");
-        html = html.replace(/&gt;/g, ">");
-        html = html.replace(/&quot;/g, "\"");
-        html = html.replace(/&#39;/g, "'");
-
-        // Trim and collapse whitespace
-        html = html.replace(/\s+/g, " ").trim();
-
-        return html.length;
+        // innerText is ALWAYS correct visible text
+        let text = editor.innerText || "";
+        text = text.replace(/\s+/g, " ").trim(); // normalize whitespace
+        return text.length;
     }
 
-    document.addEventListener("beforeinput", function(event) {
+    document.addEventListener('beforeinput', function (event) {
         const type = event.inputType;
-
-        // Allow deletion
         if (type.startsWith("delete")) return;
 
         const current = getCurrentLength();
-        const insert = (event.data || "").length;
 
-        if (current + insert > MAX_LENGTH) {
+        // event.data is null for Enter, emoji, dictation, etc.
+        const incoming = (event.data || "").length;
+
+        if (current + incoming > MAX_LENGTH) {
             event.preventDefault();
         }
     });
 
-    document.addEventListener("paste", function(event) {
+    document.addEventListener('paste', function (event) {
+        if (!editor) return;
+
         const current = getCurrentLength();
         const paste = (event.clipboardData || window.clipboardData).getData("text");
 
         if (current + paste.length > MAX_LENGTH) {
             event.preventDefault();
+            const allowed = MAX_LENGTH - current;
 
-            const available = MAX_LENGTH - current;
-            if (available > 0) {
-                const truncated = paste.substring(0, available);
+            if (allowed > 0) {
+                const truncated = paste.substring(0, allowed);
                 document.execCommand("insertText", false, truncated);
             }
         }
