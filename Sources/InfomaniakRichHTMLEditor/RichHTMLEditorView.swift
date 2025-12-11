@@ -156,12 +156,14 @@ public class RichHTMLEditorView: PlatformView {
     /// Notifies the receiver that it’s about to become first responder in its window.
     override public func becomeFirstResponder() -> Bool {
         javaScriptManager.focus()
+        webView.becomeFirstResponder()
         return true
     }
 
     /// Notifies this object that it has been asked to relinquish its status as first responder in its window.
     override public func resignFirstResponder() -> Bool {
         javaScriptManager.blur()
+        webView.resignFirstResponder()
         return true
     }
 }
