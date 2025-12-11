@@ -13,7 +13,7 @@
     const MAX_LENGTH = 4950;
 
     // Always target the real editor node
-    const editor = document.querySelector('#swift-rich-html-editor');
+    const editor = document.querySelector('#editor');
 
     function getCurrentLength() {
         if (!editor) return 0;
