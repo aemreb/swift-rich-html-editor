@@ -32,7 +32,6 @@ extension UserScript {
         UserScript(name: "captureLog", injectionTime: .atDocumentStart),
         UserScript(name: "javascriptBridge", injectionTime: .atDocumentStart),
         UserScript(name: "utils", injectionTime: .atDocumentStart),
-        UserScript(name: "characterLimit", injectionTime: .atDocumentEnd),
 
         // Editor
         UserScript(name: "text-attributes", injectionTime: .atDocumentStart),
